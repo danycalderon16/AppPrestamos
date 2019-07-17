@@ -3,9 +3,4 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".DetailsPerson">
 
-    <item
-        android:id="@+id/addAtraso"
-        android:title="Agregar Atraso"
-        app:showAsAction="ifRoom"
-        android:icon="@drawable/add_icon"/>
 </menu>

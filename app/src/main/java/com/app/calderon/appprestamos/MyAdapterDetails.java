@@ -80,7 +80,7 @@ public class MyAdapterDetails extends RecyclerView.Adapter<MyAdapterDetails.View
             });
 
             if(details.getType()==ATRASO){
-                type.setText("Atraso");4
+                type.setText("Atraso");
                 cantidad.setText(String.format(Locale.getDefault(), "+ $%d", +details.getCantidad()));
                 cantidad.setTextColor(activity.getResources().getColor(R.color.red_primary_dark));
             }

@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -21,13 +20,18 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static com.app.calderon.appprestamos.Util.ABONO;
 import static com.app.calderon.appprestamos.Util.ATRASO;
@@ -43,7 +47,9 @@ public class DetailsPerson extends AppCompatActivity implements View.OnClickList
     private MyAdapterDetails myAdapterDetails;
     private RecyclerView.LayoutManager manager;
 
-    private FloatingActionButton fab;
+    private FloatingActionsMenu fab;
+    private FloatingActionButton fabAbono;
+    private FloatingActionButton fabMulta;
     private Toolbar toolbar;
     private CoordinatorLayout coordy;
 
@@ -158,18 +164,21 @@ public class DetailsPerson extends AppCompatActivity implements View.OnClickList
     private void sendBind() {
         toolbar = findViewById(R.id.toolbar);
         fab = findViewById(R.id.fabDetails);
+        fabAbono = findViewById(R.id.fabAbono);
+        fabMulta = findViewById(R.id.fabMulta);
         //nombre = findViewById(R.id.txtPersonaDetails);
         tvFecha = findViewById(R.id.fechaDetails);
         tvCantidad = findViewById(R.id.cantidadDetails);
         tvSaldo = findViewById(R.id.saldodDetails);
         tvSaldoInicai = findViewById(R.id.saldoInicial);
-        coordy = findViewById(R.id.coodyDetails);
         fechaPick = findViewById(R.id.fechaDetailsPick);
         etAbono = findViewById(R.id.abono);
         recyclerView = findViewById(R.id.rvDetails);
         tvPagos = findViewById(R.id.pagosDetails);
 
-        fab.setOnClickListener(this);
+
+        fabAbono.setOnClickListener(this);
+        fabMulta.setOnClickListener(this);
         fechaPick.setOnClickListener(this);
 
     }
@@ -178,9 +187,13 @@ public class DetailsPerson extends AppCompatActivity implements View.OnClickList
     public void onClick(View view) {
 
         switch (view.getId()) {
-            case R.id.fabDetails:
+            case R.id.fabAbono:
                 send = true;
                 addItem(ABONO, DESCONTAR);
+                break;
+            case R.id.fabMulta:
+                send = true;
+                addItem(ATRASO, SUMAR);
                 break;
             case R.id.fechaDetailsPick:
                 setDate(this, fechaPick);
@@ -192,7 +205,7 @@ public class DetailsPerson extends AppCompatActivity implements View.OnClickList
         position = detailsList.size();
 
         if (etAbono.getText().toString().isEmpty()) {
-            Snackbar.make(coordy, "Ingrese la cantidad ", Snackbar.LENGTH_SHORT).show();
+           etAbono.setError("Ingrese cantidad");
         } else {
             abonoAux = Integer.parseInt(etAbono.getText().toString());
             detailsList.add(new Details(fechaPick.getText().toString(),
@@ -220,19 +233,11 @@ public class DetailsPerson extends AppCompatActivity implements View.OnClickList
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_toolbar, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 goBack();
                 return true;
-            case R.id.addAtraso:
-                addItem(ATRASO, SUMAR);
             default:
                 return super.onOptionsItemSelected(item);
         }
