@@ -32,7 +32,6 @@ public class MyAdapterDetails extends RecyclerView.Adapter<MyAdapterDetails.View
         this.listener = listener;
     }
 
-    @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.content_details_person, parent, false);
@@ -40,14 +39,12 @@ public class MyAdapterDetails extends RecyclerView.Adapter<MyAdapterDetails.View
         return viewHolder;
     }
 
-    @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
 
         holder.bind(detailsList.get(position));
 
     }
 
-    @Override
     public int getItemCount() {
         return detailsList.size();
     }
@@ -73,7 +70,7 @@ public class MyAdapterDetails extends RecyclerView.Adapter<MyAdapterDetails.View
             fecha.setText( f[0] +" de "+ lagerMonth(details) +" de " + f[2]);
             cantidad.setText(String.format(Locale.getDefault(), "$%d", +details.getCantidad()));
             itemView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
-                @Override
+
                 public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
                     listener.onMoreClicked(details, getAdapterPosition(), view);
                 }

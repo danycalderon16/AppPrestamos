@@ -1,18 +1,16 @@
 package com.app.calderon.appprestamos;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -20,36 +18,31 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.getbase.floatingactionbutton.FloatingActionButton;
-import com.getbase.floatingactionbutton.FloatingActionsMenu;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
-import java.lang.reflect.Type;
-import java.sql.Time;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import static com.app.calderon.appprestamos.Util.ABONO;
 import static com.app.calderon.appprestamos.Util.ATRASO;
+import static com.app.calderon.appprestamos.Util.getCounterDetails;
+import static com.app.calderon.appprestamos.Util.getCounterId;
 import static com.app.calderon.appprestamos.Util.getDate;
+import static com.app.calderon.appprestamos.Util.loadDataFromDetails;
+import static com.app.calderon.appprestamos.Util.loadDataFromPerson;
+import static com.app.calderon.appprestamos.Util.saveCounterDetails;
 import static com.app.calderon.appprestamos.Util.saveDataDetails;
 import static com.app.calderon.appprestamos.Util.setDate;
 
 public class DetailsPerson extends AppCompatActivity implements View.OnClickListener, PopupMenu.OnMenuItemClickListener {
 
 
+    private List<Person> personList;
     private List<Details> detailsList;
     private RecyclerView recyclerView;
     private MyAdapterDetails myAdapterDetails;
     private RecyclerView.LayoutManager manager;
 
-    private FloatingActionsMenu fab;
     private FloatingActionButton fabAbono;
-    private FloatingActionButton fabMulta;
     private Toolbar toolbar;
     private CoordinatorLayout coordy;
 
@@ -75,47 +68,52 @@ public class DetailsPerson extends AppCompatActivity implements View.OnClickList
 
     private int position;
     private int positionD;
-    private int positionRela;
+    private int positionId;
     private int counter = 0;
     private boolean send = false;
+
+    private int positionList = 0;
 
     private final int DESCONTAR = 333;
     private final int SUMAR = 334;
 
-    private SharedPreferences pref;
+    private SharedPreferences prefCounter;
+    private SharedPreferences prefPerson;
+    private SharedPreferences prefDetails;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details_person);
 
-        sendBind();
-
-        pref = getSharedPreferences("counter" + positionRela,
-                Context.MODE_PRIVATE);
-
-
+        getPreferences();
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
-            nombre = bundle.getString("nombre");
-            fecha = bundle.getString("fecha");
-            cantidad = bundle.getInt("cantidad");
-            saldo = bundle.getInt("saldo");
-            pagos = bundle.getInt("pagos");
-            plazos = bundle.getInt("plazos");
-            positionRela = bundle.getInt("position");
+            positionList = bundle.getInt("positionList");//lista del recyclerView del Main
         }
-        counter = getCounterSaved();
+        sendBind();
+        counter = getCounterDetails(prefCounter,myAdapterDetails,0);
         setToolbar();
         getDate(fechaPick);
-        //nombre.setText(nombreS);
+        setDataFromPerson();
+
+        sendRecyclerView();
+    }
+
+    private void getPreferences() {
+        prefPerson  = getSharedPreferences("preferencesMain",MODE_PRIVATE);
+        prefCounter = getSharedPreferences("counter",MODE_PRIVATE);
+        positionId  = getCounterId(prefCounter,0);
+        prefCounter = getSharedPreferences("counter" + positionId,MODE_PRIVATE);
+        prefDetails = getSharedPreferences("preferencesDetails" + positionId, MODE_PRIVATE);
+    }
+
+    private void setDataFromPerson() {
         tvFecha.setText(fecha);
         tvCantidad.setText(String.format(Locale.getDefault(), "$%d", cantidad));
         tvSaldo.setText(String.format(Locale.getDefault(), "$%d", saldo));
         tvPagos.setText(String.format(Locale.getDefault(), "%d/%d", counter, plazos));
         tvSaldoInicai.setText(String.format(Locale.getDefault(), "$%d", (pagos * plazos)));
-
-        sendRecyclerView();
     }
 
     private void setToolbar() {
@@ -127,10 +125,10 @@ public class DetailsPerson extends AppCompatActivity implements View.OnClickList
     }
 
     private void sendRecyclerView() {
-        loadData();
+        detailsList = loadDataFromDetails(prefDetails,detailsList, positionId);
 
         manager = new LinearLayoutManager(this);
-        myAdapterDetails = new MyAdapterDetails(detailsList, this, positionRela,
+        myAdapterDetails = new MyAdapterDetails(detailsList, this, positionId,
                 new MyAdapterDetails.OnItemEventListener() {
                     @Override
                     public void onMoreClicked(Details details, int position, View v) {
@@ -147,26 +145,11 @@ public class DetailsPerson extends AppCompatActivity implements View.OnClickList
         recyclerView.setAdapter(myAdapterDetails);
     }
 
-    private void loadData() {
-        SharedPreferences sharedPreferences = getSharedPreferences(
-                "preferencesDetails" + positionRela, MODE_PRIVATE);
-        Gson gson = new Gson();
-        String json = sharedPreferences.getString("task list details" + positionRela, null);
-        Type type = new TypeToken<ArrayList<Details>>() {
-        }.getType();
-        detailsList = gson.fromJson(json, type);
-
-        if (detailsList == null) {
-            detailsList = new ArrayList<>();
-        }
-    }
-
     private void sendBind() {
+
+        personList = loadDataFromPerson(prefPerson,personList);
         toolbar = findViewById(R.id.toolbar);
-        fab = findViewById(R.id.fabDetails);
         fabAbono = findViewById(R.id.fabAbono);
-        fabMulta = findViewById(R.id.fabMulta);
-        //nombre = findViewById(R.id.txtPersonaDetails);
         tvFecha = findViewById(R.id.fechaDetails);
         tvCantidad = findViewById(R.id.cantidadDetails);
         tvSaldo = findViewById(R.id.saldodDetails);
@@ -176,9 +159,14 @@ public class DetailsPerson extends AppCompatActivity implements View.OnClickList
         recyclerView = findViewById(R.id.rvDetails);
         tvPagos = findViewById(R.id.pagosDetails);
 
+        nombre = personList.get(positionList).getName();
+        fecha = personList.get(positionList).getFecha();
+        pagos = personList.get(positionList).getPagos();
+        plazos = personList.get(positionList).getPlazos();
+        cantidad = personList.get(positionList).getQuantity();
+        saldo = personList.get(positionList).getSaldo();
 
         fabAbono.setOnClickListener(this);
-        fabMulta.setOnClickListener(this);
         fechaPick.setOnClickListener(this);
 
     }
@@ -190,10 +178,7 @@ public class DetailsPerson extends AppCompatActivity implements View.OnClickList
             case R.id.fabAbono:
                 send = true;
                 addItem(ABONO, DESCONTAR);
-                break;
-            case R.id.fabMulta:
-                send = true;
-                addItem(ATRASO, SUMAR);
+                //editSaldo();
                 break;
             case R.id.fechaDetailsPick:
                 setDate(this, fechaPick);
@@ -217,11 +202,11 @@ public class DetailsPerson extends AppCompatActivity implements View.OnClickList
             getDate(fechaPick);
             etAbono.setText("");
             etAbono.requestFocus();
-            saveDataDetails(detailsList,this,positionRela);
+            saveDataDetails(prefDetails,detailsList, positionId);
             updateSaldo(abonoAux, operation);
             counter++;
             tvPagos.setText(String.format(Locale.getDefault(), "%d/%d", counter, plazos));
-            saveCounter();
+            saveCounterDetails(prefCounter,positionId,counter);
         }
 
     }
@@ -247,12 +232,14 @@ public class DetailsPerson extends AppCompatActivity implements View.OnClickList
         Intent intent = new Intent(DetailsPerson.this, MainActivity.class);
         if (send) {
             intent.putExtra("abono", saldoFinal);
-            intent.putExtra("position", positionRela);
+            intent.putExtra("position", positionId);
             intent.putExtra("status", send);
         }
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }
+
+
 
     private void updateSaldo(int ab, int opc) {
         String s = tvSaldo.getText().toString();
@@ -286,11 +273,11 @@ public class DetailsPerson extends AppCompatActivity implements View.OnClickList
         if(d.getType() == ABONO)  updateSaldo(desc, SUMAR);
         detailsList.remove(positionD);
         myAdapterDetails.notifyItemRemoved(positionD);
-        saveDataDetails(detailsList,this,positionRela);
+        saveDataDetails(prefDetails,detailsList, positionId);
         Toast.makeText(this, "Borrado exitoso", Toast.LENGTH_SHORT).show();
         counter--;
         tvPagos.setText(String.format(Locale.getDefault(), "%d/%d", counter, plazos));
-        saveCounter();
+        saveCounterDetails(prefCounter,positionId,counter);
     }
 
     public void showConfirmDeleteDialog(final Details d,String message) {
@@ -313,17 +300,4 @@ public class DetailsPerson extends AppCompatActivity implements View.OnClickList
         AlertDialog dialog = builder.create();
         dialog.show();
     }
-
-    private int getCounterSaved() {
-        int i = 0;
-        if (myAdapterDetails != null) i = myAdapterDetails.getItemCount();
-        return pref.getInt("counter" + positionRela, counter) + i;
-    }
-
-    private void saveCounter() {
-        SharedPreferences.Editor editor = pref.edit();
-        editor.putInt("counter" + positionRela, counter);
-        editor.apply();
-    }
-
 }

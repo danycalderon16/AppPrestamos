@@ -8,7 +8,10 @@ import android.widget.DatePicker;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -22,7 +25,6 @@ public class Util {
     public static Calendar c = Calendar.getInstance();
     public final static int  ABONO = 87;
     public final static int  ATRASO = 88;
-
 
     public static void getDate(TextView textView) {
         dia = c.get(Calendar.DAY_OF_MONTH);
@@ -41,21 +43,78 @@ public class Util {
         datePickerDialog.show();
     }}
 
-    public static void saveDataPerson(List<Person> personList,Context context ) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences("preferencesMain",context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
+    public static List<Person> loadDataFromPerson(SharedPreferences preferences,List<Person> personList) {
+        Gson gson = new Gson();
+        String json = preferences.getString("task list main", null);
+        Type type = new TypeToken<ArrayList<Person>>() {
+        }.getType();
+        personList = gson.fromJson(json, type);
+
+        if (personList == null) {
+            personList = new ArrayList<>();
+        }
+
+        return  personList;
+    }
+
+    public static List<Details> loadDataFromDetails(SharedPreferences preferences, List<Details> detailsList,int positionId) {
+        Gson gson = new Gson();
+        String json = preferences.getString("task list details" + positionId, null);
+        Type type = new TypeToken<ArrayList<Details>>() {
+        }.getType();
+        detailsList = gson.fromJson(json, type);
+
+        if (detailsList == null) {
+            detailsList = new ArrayList<>();
+        }
+
+        return detailsList;
+    }
+
+    public static void saveDataPerson(SharedPreferences preferences, List<Person> personList) {
+        SharedPreferences.Editor editor = preferences.edit();
         Gson gson = new Gson();
         String json = gson.toJson(personList);
         editor.putString("task list main", json);
         editor.apply();
     }
 
-    public static void saveDataDetails(List<Details> details, Activity activity,int positionRela) {
-        SharedPreferences sharedPreferences = activity.getSharedPreferences("preferencesDetails" + positionRela, activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
+    public static void saveDataDetails(SharedPreferences preferences, List<Details> details, int positionId) {
+        SharedPreferences.Editor editor = preferences.edit();
         Gson gson = new Gson();
         String json = gson.toJson(details);
-        editor.putString("task list details" + positionRela, json);
+        editor.putString("task list details" + positionId, json);
         editor.apply();
     }
+
+    /*----------------------------------------------------------------------*/
+    // CONTADORES DE IRREPETIBLES DE LOS ITEMS DEL RECYCLER VIEW PRESTAMOS
+    public static  void saveCounterId(SharedPreferences pref,int value) {
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putInt("count", value);
+        editor.apply();
+    }
+
+    public static int getCounterId(SharedPreferences pref,int value) {
+        return pref.getInt("count", value);
+    }
+    /*----------------------------------------------------------------------*/
+
+
+    /*----------------------------------------------------------------------*/
+    // CONTADORES DE IRREPETIBLES DE LOS ITEMS DEL RECYCLER VIEW DE LOS ABONOS
+
+    public static int getCounterDetails(SharedPreferences pref,MyAdapterDetails myAdapterDetails,int value) {
+        int i = 0;
+        if (myAdapterDetails != null) i = myAdapterDetails.getItemCount();
+        return pref.getInt("counter" + value, 0) + i;
+    }
+
+    public static void saveCounterDetails(SharedPreferences preferences, int positionId, int counter) {
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt("counter" + positionId, counter);
+        editor.apply();
+    }
+    /*----------------------------------------------------------------------*/
+
 }

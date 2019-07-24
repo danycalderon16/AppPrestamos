@@ -8,18 +8,18 @@ public class Person {
     private int pagos;
     private int saldo;
     private String fecha;
-    private int positionRela;
+    private int positionID;
 
 
 
-    public Person(String name, int quantity, int plazos, int pagos, int saldo, String fecha, int positionRela) {
+    public Person(String name, int quantity, int plazos, int pagos, int saldo, String fecha, int positionID) {
         this.name = name;
         this.quantity = quantity;
         this.plazos = plazos;
         this.pagos = pagos;
         this.saldo = saldo;
         this.fecha = fecha;
-        this.positionRela = positionRela;
+        this.positionID = positionID;
     }
 
     public String getName() {
@@ -70,11 +70,11 @@ public class Person {
         this.fecha = fecha;
     }
 
-    public int getPositionRela() {
-        return positionRela;
+    public int getPositionID() {
+        return positionID;
     }
 
-    public void setPositionRela(int positionRela) {
-        this.positionRela = positionRela;
+    public void setPositionID(int positionID) {
+        this.positionID = positionID;
     }
 }

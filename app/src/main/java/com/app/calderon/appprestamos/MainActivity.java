@@ -1,7 +1,6 @@
 package com.app.calderon.appprestamos;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -9,23 +8,19 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 
+import static com.app.calderon.appprestamos.Util.getCounterId;
 import static com.app.calderon.appprestamos.Util.getDate;
+import static com.app.calderon.appprestamos.Util.loadDataFromPerson;
+import static com.app.calderon.appprestamos.Util.saveCounterId;
 import static com.app.calderon.appprestamos.Util.saveDataPerson;
 import static com.app.calderon.appprestamos.Util.setDate;
 
@@ -50,7 +45,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private int nuevoSaldo;
     private boolean statusRec;
 
-    private SharedPreferences pref;
+    private SharedPreferences prefCounter;
+    private SharedPreferences prefPerson;
 
     private int count = 0;
 
@@ -58,14 +54,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        pref = getSharedPreferences("counter",
-                Context.MODE_PRIVATE);
-
+        setPreferences();
         sendBind();
         getDate(fecha);
         setSupportActionBar(toolbar);
-        count = getCounterSaved();
         sendRecycler();
 
         Bundle bundle = getIntent().getExtras();
@@ -76,12 +68,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private int getCounterSaved() {
-        return pref.getInt("count", count);
+    private void setPreferences() {
+        prefCounter = getSharedPreferences("counter",MODE_PRIVATE);
+        prefPerson  = getSharedPreferences("preferencesMain",MODE_PRIVATE);
     }
 
     private void sendRecycler() {
-        loadData();
+        personList = loadDataFromPerson(prefPerson,personList);
 
         manager = new LinearLayoutManager(this);
         myAdapterPerson = new MyAdapterPerson(personList,
@@ -91,13 +84,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onItemClick(Person person, int position) {
                 Intent intent = new Intent(MainActivity.this, DetailsPerson.class);
-                intent.putExtra("nombre", person.getName());
-                intent.putExtra("fecha", person.getFecha());
-                intent.putExtra("plazos", person.getPlazos());
-                intent.putExtra("pagos", person.getPagos());
-                intent.putExtra("cantidad", person.getQuantity());
-                intent.putExtra("saldo", person.getSaldo());
-                intent.putExtra("position", person.getPositionRela());
+                intent.putExtra("positionList",position);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
             }
@@ -107,20 +94,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         recyclerView.setAdapter(myAdapterPerson);
     }
 
-    private void loadData() {
-        SharedPreferences sharedPreferences = getSharedPreferences("preferencesMain", MODE_PRIVATE);
-        Gson gson = new Gson();
-        String json = sharedPreferences.getString("task list main", null);
-        Type type = new TypeToken<ArrayList<Person>>() {
-        }.getType();
-        personList = gson.fromJson(json, type);
-
-        if (personList == null) {
-            personList = new ArrayList<>();
-        }
-    }
-
     private void sendBind() {
+        count = getCounterId(prefCounter,0);
+
         toolbar = findViewById(R.id.toolbar);
         fab = findViewById(R.id.addPerson);
         recyclerView = findViewById(R.id.rv);
@@ -140,13 +116,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onResume();
         if (statusRec) {
             for (int i = 0; i < personList.size(); i++) {
-                if (positionRec == personList.get(i).getPositionRela()) {
+                if (positionRec == personList.get(i).getPositionID()) {
                     personList.get(i).setSaldo(nuevoSaldo);
                 }
             }
         }
         myAdapterPerson.notifyDataSetChanged();
-        saveDataPerson(personList, this);
+        saveDataPerson(prefPerson,personList);
     }
 
     @Override
@@ -159,12 +135,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 setDate(this, fecha);
                 break;
         }
-    }
-
-    private void saveCounter() {
-        SharedPreferences.Editor editor = pref.edit();
-        editor.putInt("count", count);
-        editor.apply();
     }
 
     private boolean validateEditText(TextInputLayout textInputLayout) {
@@ -194,7 +164,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 fecha.getText().toString(),
                 count));
         count++;
-        saveCounter();
+
+        saveCounterId(prefCounter,count);
 
         recyclerView.scrollToPosition(position);
         myAdapterPerson.notifyItemInserted(position);
@@ -204,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         plazos.getEditText().setText("");
         getDate(fecha);
         nombre.requestFocus();
-        saveDataPerson(personList, this);
+        saveDataPerson(prefPerson,personList);
         Snackbar.make(coordy,"Prestamo agregado",Snackbar.LENGTH_SHORT).show();
 
     }

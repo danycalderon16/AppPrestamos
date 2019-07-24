@@ -110,6 +110,7 @@ public class MyAdapterPerson extends RecyclerView.Adapter<MyAdapterPerson.ViewHo
 
         public void showConfirmDeleteDiaglog(){
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            final SharedPreferences prefPerson = context.getSharedPreferences("preferencesMain",context.MODE_PRIVATE);
             builder.setCancelable(true);
             builder.setMessage("¿Desea borrar prestamo de "+people.get(getAdapterPosition()).getName()+"?");
             builder.setPositiveButton("Sí",
@@ -118,7 +119,7 @@ public class MyAdapterPerson extends RecyclerView.Adapter<MyAdapterPerson.ViewHo
                         public void onClick(DialogInterface dialog, int which) {
                             people.remove(getAdapterPosition());
                             notifyItemRemoved(getAdapterPosition());
-                            saveDataPerson(people,context);
+                            saveDataPerson(prefPerson,people);
                             Toast.makeText(context,"Borrado exitoso",Toast.LENGTH_SHORT).show();
                         }
                     });

@@ -205,36 +205,16 @@
         android:background="@color/white"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-    <com.getbase.floatingactionbutton.FloatingActionsMenu
-        android:id="@+id/fabDetails"
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fabAbono"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right|bottom"
         android:layout_margin="@dimen/fab_margin"
         app:srcCompat="@drawable/add_icon"
         app:fab_addButtonColorPressed="@color/blue_primary_dark"
-        app:fab_labelStyle="@style/custom_fab">
+        app:fab_labelStyle="@style/custom_fab"/>
 
-        <com.getbase.floatingactionbutton.FloatingActionButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/fabAbono"
-            app:fab_colorNormal="@color/indigo_primary"
-            app:fab_colorPressed="@color/indigo_primary_dark"
-            app:fab_size="mini"
-            app:fab_icon="@drawable/ic_abono"
-            app:fab_title="Abono"/>
 
-        <com.getbase.floatingactionbutton.FloatingActionButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/fabMulta"
-            app:fab_colorNormal="@color/indigo_primary"
-            app:fab_colorPressed="@color/indigo_primary_dark"
-            app:fab_size="mini"
-            app:fab_icon="@drawable/ic_multa"
-            app:fab_title="Multa"/>
-
-    </com.getbase.floatingactionbutton.FloatingActionsMenu>
 
 </android.support.design.widget.CoordinatorLayout>
