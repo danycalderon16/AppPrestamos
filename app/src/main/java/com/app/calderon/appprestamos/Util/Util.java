@@ -1,12 +1,15 @@
-package com.app.calderon.appprestamos;
+package com.app.calderon.appprestamos.Util;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.widget.DatePicker;
 import android.widget.TextView;
 
+import com.app.calderon.appprestamos.Adapters.MyAdapterDetails;
+import com.app.calderon.appprestamos.Models.Completed;
+import com.app.calderon.appprestamos.Models.Details;
+import com.app.calderon.appprestamos.Models.Person;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -23,8 +26,10 @@ public class Util {
     public static int year;
     public static String mesS[] = {"ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"};
     public static Calendar c = Calendar.getInstance();
-    public final static int  ABONO = 87;
-    public final static int  ATRASO = 88;
+    public final static int ABONO = 87;
+    public final static int ATRASO = 88;
+    public final static int NO_ADDED = 498;
+    public final static int ADDED = 499;
 
     public static void getDate(TextView textView) {
         dia = c.get(Calendar.DAY_OF_MONTH);
@@ -43,7 +48,7 @@ public class Util {
         datePickerDialog.show();
     }}
 
-    public static List<Person> loadDataFromPerson(SharedPreferences preferences,List<Person> personList) {
+    public static List<Person> loadDataFromPerson(SharedPreferences preferences, List<Person> personList) {
         Gson gson = new Gson();
         String json = preferences.getString("task list main", null);
         Type type = new TypeToken<ArrayList<Person>>() {
@@ -57,7 +62,7 @@ public class Util {
         return  personList;
     }
 
-    public static List<Details> loadDataFromDetails(SharedPreferences preferences, List<Details> detailsList,int positionId) {
+    public static List<Details> loadDataFromDetails(SharedPreferences preferences, List<Details> detailsList, int positionId) {
         Gson gson = new Gson();
         String json = preferences.getString("task list details" + positionId, null);
         Type type = new TypeToken<ArrayList<Details>>() {
@@ -69,6 +74,19 @@ public class Util {
         }
 
         return detailsList;
+    }
+
+    public static List<Person> loadDataCompleted(SharedPreferences preferences,List<Person> completedList){
+        Gson gson = new Gson();
+        String json = preferences.getString("completed list",null);
+        Type type = new TypeToken<ArrayList<Completed>>(){}.getType();
+        completedList = gson.fromJson(json,type);
+
+        if(completedList == null){
+            completedList = new ArrayList<>();
+        }
+
+        return completedList;
     }
 
     public static void saveDataPerson(SharedPreferences preferences, List<Person> personList) {
@@ -104,7 +122,7 @@ public class Util {
     /*----------------------------------------------------------------------*/
     // CONTADORES DE IRREPETIBLES DE LOS ITEMS DEL RECYCLER VIEW DE LOS ABONOS
 
-    public static int getCounterDetails(SharedPreferences pref,MyAdapterDetails myAdapterDetails,int value) {
+    public static int getCounterDetails(SharedPreferences pref, MyAdapterDetails myAdapterDetails, int value) {
         int i = 0;
         if (myAdapterDetails != null) i = myAdapterDetails.getItemCount();
         return pref.getInt("counter" + value, 0) + i;

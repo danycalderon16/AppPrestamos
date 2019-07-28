@@ -1,4 +1,4 @@
-package com.app.calderon.appprestamos;
+package com.app.calderon.appprestamos.Adapters;
 
 import android.app.Activity;
 import android.support.v7.widget.CardView;
@@ -9,11 +9,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.app.calderon.appprestamos.Models.Details;
+import com.app.calderon.appprestamos.R;
+
 import java.util.List;
 import java.util.Locale;
 
-import static com.app.calderon.appprestamos.Util.ABONO;
-import static com.app.calderon.appprestamos.Util.ATRASO;
+import static com.app.calderon.appprestamos.Util.Util.ABONO;
+import static com.app.calderon.appprestamos.Util.Util.ATRASO;
 
 public class MyAdapterDetails extends RecyclerView.Adapter<MyAdapterDetails.ViewHolder> {
 

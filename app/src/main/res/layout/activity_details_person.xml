@@ -6,13 +6,13 @@
     android:background="@color/white"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DetailsPerson">
+    tools:context=".Activities.DetailsPerson">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        android:paddingBottom="20dp">
+        android:paddingBottom="2dp">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
@@ -28,16 +28,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_margin="5dp">
-
-           <!-- <TextView
-                android:id="@+id/txtPersonaDetails"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:gravity="center_horizontal"
-                android:text="Persona"
-                android:textSize="28sp"
-                android:textStyle="bold" />-->
 
             <LinearLayout
                 android:layout_width="match_parent"

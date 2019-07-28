@@ -1,4 +1,4 @@
-package com.app.calderon.appprestamos;
+package com.app.calderon.appprestamos.Adapters;
 
 import android.app.Activity;
 import android.content.Context;
@@ -15,12 +15,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
+import com.app.calderon.appprestamos.Models.Person;
+import com.app.calderon.appprestamos.R;
 
-import java.text.ParseException;
 import java.util.List;
 
-import static com.app.calderon.appprestamos.Util.saveDataPerson;
+import static com.app.calderon.appprestamos.Util.Util.saveDataPerson;
 
 public class MyAdapterPerson extends RecyclerView.Adapter<MyAdapterPerson.ViewHolder>{
 
@@ -75,7 +75,7 @@ public class MyAdapterPerson extends RecyclerView.Adapter<MyAdapterPerson.ViewHo
             name.setText(person.getName());
             quantity.setText("$"+person.getQuantity());
             saldo.setText("$"+person.getSaldo());
-            date.setText(person.getFecha());
+            date.setText(person.getFechaInicial());
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

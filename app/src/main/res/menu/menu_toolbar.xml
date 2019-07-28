@@ -1,6 +1,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".DetailsPerson">
+    tools:context=".Activities.DetailsPerson">
 
+    <item
+        android:title="Agregar"
+        android:id="@+id/addFinish"
+        android:icon="@drawable/add_icon"
+        app:showAsAction="always"/>
 </menu>

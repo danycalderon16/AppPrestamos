@@ -1,6 +1,5 @@
-package com.app.calderon.appprestamos;
+package com.app.calderon.appprestamos.Activities;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -15,14 +14,19 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
 
+import com.app.calderon.appprestamos.Adapters.MyAdapterPerson;
+import com.app.calderon.appprestamos.Models.Person;
+import com.app.calderon.appprestamos.R;
+
 import java.util.List;
 
-import static com.app.calderon.appprestamos.Util.getCounterId;
-import static com.app.calderon.appprestamos.Util.getDate;
-import static com.app.calderon.appprestamos.Util.loadDataFromPerson;
-import static com.app.calderon.appprestamos.Util.saveCounterId;
-import static com.app.calderon.appprestamos.Util.saveDataPerson;
-import static com.app.calderon.appprestamos.Util.setDate;
+import static com.app.calderon.appprestamos.Util.Util.NO_ADDED;
+import static com.app.calderon.appprestamos.Util.Util.getCounterId;
+import static com.app.calderon.appprestamos.Util.Util.getDate;
+import static com.app.calderon.appprestamos.Util.Util.loadDataFromPerson;
+import static com.app.calderon.appprestamos.Util.Util.saveCounterId;
+import static com.app.calderon.appprestamos.Util.Util.saveDataPerson;
+import static com.app.calderon.appprestamos.Util.Util.setDate;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -59,13 +63,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         getDate(fecha);
         setSupportActionBar(toolbar);
         sendRecycler();
-
+/*
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             nuevoSaldo = bundle.getInt("abono");
             positionRec = bundle.getInt("position");
             statusRec = bundle.getBoolean("status");
-        }
+        }*/
     }
 
     private void setPreferences() {
@@ -85,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onItemClick(Person person, int position) {
                 Intent intent = new Intent(MainActivity.this, DetailsPerson.class);
                 intent.putExtra("positionList",position);
+                intent.putExtra("positionID",person.getPositionID());
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
             }
@@ -114,13 +119,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onResume() {
         super.onResume();
-        if (statusRec) {
+        /*if (statusRec) {
             for (int i = 0; i < personList.size(); i++) {
                 if (positionRec == personList.get(i).getPositionID()) {
                     personList.get(i).setSaldo(nuevoSaldo);
                 }
             }
-        }
+        }*/
         myAdapterPerson.notifyDataSetChanged();
         saveDataPerson(prefPerson,personList);
     }
@@ -162,7 +167,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Integer.parseInt(pagos.getEditText().getText().toString()),
                 saldo,
                 fecha.getText().toString(),
-                count));
+                fecha.getText().toString(),
+                count,
+                NO_ADDED));
         count++;
 
         saveCounterId(prefCounter,count);

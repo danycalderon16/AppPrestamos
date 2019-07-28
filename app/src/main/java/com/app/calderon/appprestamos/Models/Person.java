@@ -1,4 +1,4 @@
-package com.app.calderon.appprestamos;
+package com.app.calderon.appprestamos.Models;
 
 public class Person {
 
@@ -7,19 +7,22 @@ public class Person {
     private int plazos;
     private int pagos;
     private int saldo;
-    private String fecha;
+    private String fechaInicial;
+    private String fechaFinal;
     private int positionID;
+    private int added;
 
 
-
-    public Person(String name, int quantity, int plazos, int pagos, int saldo, String fecha, int positionID) {
+    public Person(String name, int quantity, int plazos, int pagos, int saldo, String fechaInicial, String fechaFinal, int positionID, int added) {
         this.name = name;
         this.quantity = quantity;
         this.plazos = plazos;
         this.pagos = pagos;
         this.saldo = saldo;
-        this.fecha = fecha;
+        this.fechaInicial = fechaInicial;
+        this.fechaFinal = fechaFinal;
         this.positionID = positionID;
+        this.added = added;
     }
 
     public String getName() {
@@ -62,12 +65,20 @@ public class Person {
         this.pagos = pagos;
     }
 
-    public String getFecha() {
-        return fecha;
+    public String getFechaInicial() {
+        return fechaInicial;
     }
 
-    public void setFecha(String fecha) {
-        this.fecha = fecha;
+    public void setFechaInicial(String fechaInicial) {
+        this.fechaInicial = fechaInicial;
+    }
+
+    public String getFechaFinal() {
+        return fechaFinal;
+    }
+
+    public void setFechaFinal(String fechaFinal) {
+        this.fechaFinal = fechaFinal;
     }
 
     public int getPositionID() {
@@ -76,5 +87,13 @@ public class Person {
 
     public void setPositionID(int positionID) {
         this.positionID = positionID;
+    }
+
+    public int getAdded() {
+        return added;
+    }
+
+    public void setAdded(int added) {
+        this.added = added;
     }
 }

@@ -9,7 +9,7 @@
     android:paddingRight="10dp"
     android:paddingTop="5dp"
     android:paddingBottom="5dp"
-    tools:context=".DetailsPerson">
+    tools:context=".Activities.DetailsPerson">
 
 
     <View

@@ -1,4 +1,4 @@
-package com.app.calderon.appprestamos;
+package com.app.calderon.appprestamos.Models;
 
 public class Details {
 
