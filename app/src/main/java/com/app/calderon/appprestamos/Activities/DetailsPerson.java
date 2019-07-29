@@ -271,16 +271,9 @@ public class DetailsPerson extends AppCompatActivity implements View.OnClickList
 
     private void goBack() {
         Intent intent = new Intent(DetailsPerson.this, MainActivity.class);
-        /*if (send) {
-            intent.putExtra("abono", saldoFinal);
-            intent.putExtra("position", positionId);
-            intent.putExtra("status", send);
-        }*/
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }
-
-
 
     private void updateSaldo(int abono) {
         int saldoParcial = saldo;

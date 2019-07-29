@@ -11,6 +11,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -45,10 +47,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextInputLayout pagos;
     private TextView fecha;
 
-    private int positionRec;
-    private int nuevoSaldo;
-    private boolean statusRec;
-
     private SharedPreferences prefCounter;
     private SharedPreferences prefPerson;
 
@@ -63,13 +61,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         getDate(fecha);
         setSupportActionBar(toolbar);
         sendRecycler();
-/*
-        Bundle bundle = getIntent().getExtras();
-        if (bundle != null) {
-            nuevoSaldo = bundle.getInt("abono");
-            positionRec = bundle.getInt("position");
-            statusRec = bundle.getBoolean("status");
-        }*/
     }
 
     private void setPreferences() {
@@ -81,9 +72,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         personList = loadDataFromPerson(prefPerson,personList);
 
         manager = new LinearLayoutManager(this);
-        myAdapterPerson = new MyAdapterPerson(personList,
-                this,
-                this,
+        myAdapterPerson = new MyAdapterPerson(personList,this,this,
                 new MyAdapterPerson.OnItemClickListener() {
             @Override
             public void onItemClick(Person person, int position) {
@@ -119,13 +108,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onResume() {
         super.onResume();
-        /*if (statusRec) {
-            for (int i = 0; i < personList.size(); i++) {
-                if (positionRec == personList.get(i).getPositionID()) {
-                    personList.get(i).setSaldo(nuevoSaldo);
-                }
-            }
-        }*/
         myAdapterPerson.notifyDataSetChanged();
         saveDataPerson(prefPerson,personList);
     }
@@ -139,6 +121,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.fecha:
                 setDate(this, fecha);
                 break;
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_completed,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.icon_completed:
+                Intent intent = new Intent(this, CompletedActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 

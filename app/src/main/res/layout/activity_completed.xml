@@ -24,10 +24,38 @@
         android:layout_height="match_parent"
         app:layout_behavior="android.support.design.widget.AppBarLayout$ScrollingViewBehavior">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recyclerViewCompleted"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_margin="10dp"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Total"
+                android:layout_margin="10dp"
+
+                android:id="@+id/txtTotal"
+                />
+
+            <TextView
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/txtTotal"
+                android:id="@+id/textViewTotal"
+                android:layout_toEndOf="@+id/txtTotal"
+                android:text="$1000"
+                android:textStyle="bold"
+                android:textColor="@color/green_primary_dark" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerViewCompleted"
+                android:layout_width="match_parent"
+                android:layout_margin="10dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/txtTotal"/>
+
+        </RelativeLayout>
+
     </android.support.v4.widget.NestedScrollView>
 </android.support.design.widget.CoordinatorLayout>
