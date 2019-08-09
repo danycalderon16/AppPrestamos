@@ -3,6 +3,7 @@ package com.app.calderon.appprestamos.Adapters;
 import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,10 +20,12 @@ public class MyAdapterCompleted extends  RecyclerView.Adapter<MyAdapterCompleted
 
     private List<Person> completedList;
     private Activity activity;
+    private OnItemEventListener listener;
 
-    public MyAdapterCompleted(List<Person> completedList, Activity activity) {
+    public MyAdapterCompleted(List<Person> completedList, Activity activity,OnItemEventListener listener) {
         this.completedList = completedList;
         this.activity = activity;
+        this.listener = listener;
     }
 
     @NonNull
@@ -57,13 +60,19 @@ public class MyAdapterCompleted extends  RecyclerView.Adapter<MyAdapterCompleted
             date = itemView.findViewById(R.id.dateCompleted);
         }
 
-        public void bind(Person person) {
+        public void bind(final Person person) {
             name.setText(person.getName());
             String f[] = person.getFechaFinal().split("/");
             date.setText(f[0] +" de "+ lagerMonth(person) +" de " + f[2]);
-            int cantidad = person.getPagos()*person.getPlazos();
+            int cantidad = (person.getPagos()*person.getPlazos())-person.getQuantity();
             quantity.setText(String.format(Locale.getDefault(),
                     "$%d",cantidad));
+            itemView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
+                @Override
+                public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
+                    listener.onMoreClicked(person,getAdapterPosition(),view);
+                }
+            });
         }
     }
 
@@ -111,6 +120,10 @@ public class MyAdapterCompleted extends  RecyclerView.Adapter<MyAdapterCompleted
                 return "";
         }
         return  c;
+    }
+
+    public interface OnItemEventListener {
+        void onMoreClicked(Person completedPerson, int position, View view);
     }
 
 

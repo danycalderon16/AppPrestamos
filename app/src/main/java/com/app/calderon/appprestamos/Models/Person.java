@@ -96,4 +96,19 @@ public class Person {
     public void setAdded(int added) {
         this.added = added;
     }
+
+    @Override
+    public String toString() {
+        return "Person{" +
+                "name='" + name + '\'' +
+                ",\n quantity=" + quantity +
+                ",\n plazos=" + plazos +
+                ",\n pagos=" + pagos +
+                ",\n saldo=" + saldo +
+                ",\n fechaInicial='" + fechaInicial + '\'' +
+                ",\n fechaFinal='" + fechaFinal + '\'' +
+                ",\n positionID=" + positionID +
+                ", added=" + added +
+                '}';
+    }
 }

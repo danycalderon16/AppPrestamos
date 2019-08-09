@@ -25,9 +25,11 @@
             android:name=".Activities.DetailsPerson"
             android:label="@string/title_activity_details_person"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"
+            android:theme="@style/AppTheme.SlidrActivityTheme"
             android:windowSoftInputMode="stateHidden" />
-        <activity android:name=".Activities.CompletedActivity"></activity>
+        <activity
+            android:name=".Activities.CompletedActivity"
+            android:theme="@style/AppTheme.SlidrActivityTheme"></activity>
     </application>
 
 </manifest>

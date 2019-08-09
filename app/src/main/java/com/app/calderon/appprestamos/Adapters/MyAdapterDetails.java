@@ -73,7 +73,6 @@ public class MyAdapterDetails extends RecyclerView.Adapter<MyAdapterDetails.View
             fecha.setText( f[0] +" de "+ lagerMonth(details) +" de " + f[2]);
             cantidad.setText(String.format(Locale.getDefault(), "$%d", +details.getCantidad()));
             itemView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
-
                 public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
                     listener.onMoreClicked(details, getAdapterPosition(), view);
                 }

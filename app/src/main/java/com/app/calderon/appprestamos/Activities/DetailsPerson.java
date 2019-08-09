@@ -22,18 +22,24 @@ import com.app.calderon.appprestamos.Models.Details;
 import com.app.calderon.appprestamos.Adapters.MyAdapterDetails;
 import com.app.calderon.appprestamos.Models.Person;
 import com.app.calderon.appprestamos.R;
+import com.r0adkll.slidr.Slidr;
+import com.r0adkll.slidr.model.SlidrInterface;
 
 import java.util.List;
 import java.util.Locale;
 
 import static com.app.calderon.appprestamos.Util.Util.ABONO;
 import static com.app.calderon.appprestamos.Util.Util.ADDED;
+import static com.app.calderon.appprestamos.Util.Util.RESTAR;
+import static com.app.calderon.appprestamos.Util.Util.SUMAR;
 import static com.app.calderon.appprestamos.Util.Util.getCounterDetails;
 import static com.app.calderon.appprestamos.Util.Util.getDate;
+import static com.app.calderon.appprestamos.Util.Util.goMain;
 import static com.app.calderon.appprestamos.Util.Util.loadDataCompleted;
 import static com.app.calderon.appprestamos.Util.Util.loadDataFromDetails;
 import static com.app.calderon.appprestamos.Util.Util.loadDataFromPerson;
 import static com.app.calderon.appprestamos.Util.Util.saveCounterDetails;
+import static com.app.calderon.appprestamos.Util.Util.saveDataCompleted;
 import static com.app.calderon.appprestamos.Util.Util.saveDataDetails;
 import static com.app.calderon.appprestamos.Util.Util.saveDataPerson;
 import static com.app.calderon.appprestamos.Util.Util.setDate;
@@ -71,11 +77,14 @@ public class DetailsPerson extends AppCompatActivity implements View.OnClickList
     private int position;
     private int positionId;
     private int positionDelete;
-    private int counter = 0;
+    private int pays = 0;
+    //private int counter = 0;
 
     private int positionList = 0;
 
+    private SlidrInterface slidr;
     private SharedPreferences prefCounter;
+    private SharedPreferences prefCounterID;
     private SharedPreferences prefPerson;
     private SharedPreferences prefDetails;
     private SharedPreferences prefCompleted;
@@ -92,27 +101,28 @@ public class DetailsPerson extends AppCompatActivity implements View.OnClickList
         }
         getPreferences();
         sendBind();
-        counter = getCounterDetails(prefCounter,myAdapterDetails,0);
+        //counter = getCounterDetails(prefCounter,myAdapterDetails,0);
         setToolbar();
         getDate(fechaPick);
-        setDataFromPerson();
-
         sendRecyclerView();
+        setDataFromPerson();
+        slidr = Slidr.attach(this);
     }
 
     private void getPreferences() {
         prefPerson    = getSharedPreferences("preferencesMain",MODE_PRIVATE);
-        prefCounter   = getSharedPreferences("counter",MODE_PRIVATE);
+        prefCounterID   = getSharedPreferences("counter",MODE_PRIVATE);
         prefCounter   = getSharedPreferences("counter" + positionId,MODE_PRIVATE);
         prefDetails   = getSharedPreferences("preferencesDetails" + positionId, MODE_PRIVATE);
         prefCompleted = getSharedPreferences("preferencesCompleted",MODE_PRIVATE);
     }
 
     private void setDataFromPerson() {
+        if(myAdapterDetails != null)pays= myAdapterDetails.getItemCount();
         tvFecha.setText(fecha);
         tvCantidad.setText(String.format(Locale.getDefault(), "$%d", cantidad));
         tvSaldo.setText(String.format(Locale.getDefault(), "$%d", saldo));
-        tvPagos.setText(String.format(Locale.getDefault(), "%d/%d", counter, plazos));
+        tvPagos.setText(String.format(Locale.getDefault(), "%d/%d", pays, plazos));
         tvSaldoInicai.setText(String.format(Locale.getDefault(), "$%d", (pagos * plazos)));
     }
 
@@ -168,7 +178,6 @@ public class DetailsPerson extends AppCompatActivity implements View.OnClickList
 
         fabAbono.setOnClickListener(this);
         fechaPick.setOnClickListener(this);
-
     }
 
     @Override
@@ -202,18 +211,28 @@ public class DetailsPerson extends AppCompatActivity implements View.OnClickList
             etAbono.requestFocus();
             saveDataDetails(prefDetails,detailsList, positionId);
             personList.get(positionList).setFechaFinal(fechaPick.getText().toString());
-            updateSaldo(abono);
-            counter++;
-            tvPagos.setText(String.format(Locale.getDefault(), "%d/%d", counter, plazos));
-            saveCounterDetails(prefCounter,positionId,counter);
+            updateSaldo(abono,RESTAR);
+            pays++;
+            tvPagos.setText(String.format(Locale.getDefault(), "%d/%d", pays, plazos));
+            if(checkIfCompleted()) {
+                confirmCompleted("Ha compledado el total de pagos\n¿Desea agregarlo a  prestamo completado?");
+            }
+            //saveCounterDetails(prefCounter,positionId,counter);
         }
 
+    }
+
+    private boolean checkIfCompleted(){
+        if(pays == plazos)
+            return true;
+        else
+            return false;
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        goBack();
+        goMain(this);
     }
 
     @Override
@@ -226,32 +245,32 @@ public class DetailsPerson extends AppCompatActivity implements View.OnClickList
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                goBack();
+                goMain(this);
+                overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
                 return true;
             case R.id.addFinish:
-                confirmCompleted();
+                confirmCompleted("¿Desea agregar prestamo completado?");
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
     private void addCompleted() {
-        int finishMoney = pagos*plazos;
-        int dividends = finishMoney - cantidad;
-        String date = personList.get(positionList).getFechaFinal();
         if(personList.get(positionList).getAdded()!=ADDED) {
-            completedList.add(personList.get(positionList));
             personList.get(positionList).setAdded(ADDED);
-            Toast.makeText(this,completedList.toString(), Toast.LENGTH_SHORT).show();
+            completedList.add(personList.get(positionList));
+            saveDataPerson(prefPerson,personList);
+            saveDataCompleted(prefCompleted,completedList);
+            Toast.makeText(this,completedList.get(positionList).toString(), Toast.LENGTH_LONG).show();
         }else{
             Toast.makeText(this,"Prestamo completado ya ha sido agregado",Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void confirmCompleted() {
+    private void confirmCompleted(String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(DetailsPerson.this);
         builder.setCancelable(true);
-        builder.setMessage("¿Desea agregar prestamo completado");
+        builder.setMessage(message);
         builder.setPositiveButton("Sí",
                 new DialogInterface.OnClickListener() {
                     @Override
@@ -269,17 +288,11 @@ public class DetailsPerson extends AppCompatActivity implements View.OnClickList
         dialog.show();
     }
 
-    private void goBack() {
-        Intent intent = new Intent(DetailsPerson.this, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-    }
-
-    private void updateSaldo(int abono) {
+    private void updateSaldo(int abono,int type) {
         int saldoParcial = saldo;
-        saldo = saldoParcial-abono;
+        if(type == RESTAR) saldo = saldoParcial-abono;
+        if(type == SUMAR) saldo = saldoParcial+abono;
         tvSaldo.setText(String.format(Locale.getDefault(), "$%d", saldo));
-        tvSaldoInicai.setText(String.format(Locale.getDefault(), "$%d", (pagos * plazos)));
         personList.get(positionList).setSaldo(saldo);
         saveDataPerson(prefPerson,personList);
     }
@@ -297,16 +310,22 @@ public class DetailsPerson extends AppCompatActivity implements View.OnClickList
         }
     }
 
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
+    }
+
     private void deleteAbono(Details d) {
         int desc = d.getCantidad();
-        updateSaldo(desc);
+        updateSaldo(desc,SUMAR);
         detailsList.remove(positionDelete);
         myAdapterDetails.notifyItemRemoved(positionDelete);
         saveDataDetails(prefDetails,detailsList, positionId);
         Toast.makeText(this, "Borrado exitoso", Toast.LENGTH_SHORT).show();
-        counter--;
-        tvPagos.setText(String.format(Locale.getDefault(), "%d/%d", counter, plazos));
-        saveCounterDetails(prefCounter,positionId,counter);
+        pays--;
+        tvPagos.setText(String.format(Locale.getDefault(), "%d/%d", pays, plazos));
+        //saveCounterDetails(prefCounter,positionId,counter);
     }
 
     public void showConfirmDeleteDialog(final Details d,String message) {

@@ -16,6 +16,31 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content "
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight=".275"
+                android:textStyle="bold"
+                android:text="Nombre"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:layout_weight=".275"
+                android:text="Ganancia"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight=".40"
+                android:textStyle="bold"
+                android:text="Fecha"/>
+        </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -24,19 +49,19 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight=".33"
+                android:layout_weight=".275"
                 android:id="@+id/nameCompleted"
                 android:text="Jhon"/>
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight=".33"
+                android:layout_weight=".275"
                 android:id="@+id/quantityCompleted"
                 android:text="$300"/>
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight=".33"
+                android:layout_weight=".40"
                 android:id="@+id/dateCompleted"
                 android:text="22/02//2019"/>
         </LinearLayout>

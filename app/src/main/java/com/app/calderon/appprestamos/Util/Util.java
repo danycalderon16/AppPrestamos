@@ -1,15 +1,19 @@
 package com.app.calderon.appprestamos.Util;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.widget.DatePicker;
 import android.widget.TextView;
 
+import com.app.calderon.appprestamos.Activities.MainActivity;
 import com.app.calderon.appprestamos.Adapters.MyAdapterDetails;
 import com.app.calderon.appprestamos.Models.Completed;
 import com.app.calderon.appprestamos.Models.Details;
 import com.app.calderon.appprestamos.Models.Person;
+import com.app.calderon.appprestamos.R;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -26,10 +30,21 @@ public class Util {
     public static int year;
     public static String mesS[] = {"ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"};
     public static Calendar c = Calendar.getInstance();
-    public final static int ABONO = 87;
+    public final static int ABONO  = 87;
     public final static int ATRASO = 88;
     public final static int NO_ADDED = 498;
-    public final static int ADDED = 499;
+    public final static int ADDED    = 499;
+    public final static int SUMAR  = 7;
+    public final static int RESTAR = 8;
+
+    public static void goMain(Activity activity) {
+        Intent intent = new Intent(activity, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        activity.startActivity(intent);
+
+        activity.overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
+
+    }
 
     public static void getDate(TextView textView) {
         dia = c.get(Calendar.DAY_OF_MONTH);
@@ -79,7 +94,7 @@ public class Util {
     public static List<Person> loadDataCompleted(SharedPreferences preferences,List<Person> completedList){
         Gson gson = new Gson();
         String json = preferences.getString("completed list",null);
-        Type type = new TypeToken<ArrayList<Completed>>(){}.getType();
+        Type type = new TypeToken<ArrayList<Person>>(){}.getType();
         completedList = gson.fromJson(json,type);
 
         if(completedList == null){
@@ -102,6 +117,15 @@ public class Util {
         Gson gson = new Gson();
         String json = gson.toJson(details);
         editor.putString("task list details" + positionId, json);
+        editor.apply();
+    }
+
+
+    public static void saveDataCompleted(SharedPreferences preferences, List<Person> completedLits) {
+        SharedPreferences.Editor editor = preferences.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(completedLits);
+        editor.putString("completed list", json);
         editor.apply();
     }
 
