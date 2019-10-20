@@ -116,7 +116,7 @@
                 android:layout_weight=".065"
                 android:layout_gravity="center_vertical"
                 android:id="@+id/payMethod"
-                android:background="@drawable/circle_shape_weekly"/>
+                android:background="@drawable/circle_weekly"/>
 
         </LinearLayout>
 

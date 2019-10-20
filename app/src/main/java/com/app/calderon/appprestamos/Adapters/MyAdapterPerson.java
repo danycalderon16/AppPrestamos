@@ -97,10 +97,10 @@ public class MyAdapterPerson extends RecyclerView.Adapter<MyAdapterPerson.ViewHo
                 }
             });
             if(person.getPayment() == WEEKLY){
-                circle.setBackground(context.getDrawable(R.drawable.circle_shape_weekly));
+                circle.setBackground(context.getDrawable(R.drawable.circle_weekly));
             }
             if(person.getPayment() == BIWEEKLY){
-                circle.setBackground(context.getDrawable(R.drawable.circle_shape_biweekly));
+                circle.setBackground(context.getDrawable(R.drawable.circle_beweekly));
             }
         }
 
