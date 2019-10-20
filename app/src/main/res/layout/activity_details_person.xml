@@ -41,7 +41,8 @@
                     android:layout_marginLeft="5dp"
                     android:layout_weight=".5"
                     android:text="Fecha"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"
+                    android:id="@+id/changeMethod"/>
 
                 <TextView
                     android:id="@+id/fechaDetails"

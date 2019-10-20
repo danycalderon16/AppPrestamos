@@ -1,17 +1,23 @@
 package com.app.calderon.appprestamos.Activities;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,7 +28,9 @@ import com.app.calderon.appprestamos.Models.Person;
 import com.app.calderon.appprestamos.R;
 
 import java.util.List;
+import java.util.Locale;
 
+import static com.app.calderon.appprestamos.Util.Util.BIWEEKLY;
 import static com.app.calderon.appprestamos.Util.Util.NO_ADDED;
 import static com.app.calderon.appprestamos.Util.Util.getCounterId;
 import static com.app.calderon.appprestamos.Util.Util.getDate;
@@ -105,7 +113,59 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         fecha.setOnClickListener(this);
         fab.setOnClickListener(this);
+        fab.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                showInfoDialog();
+                return false;
+            }
+        });
     }
+
+    private void showInfoDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater  = getLayoutInflater();
+        View v = inflater.inflate(R.layout.info_layout,null);
+
+        int recuperar = 0;
+        int ganar = 0;
+
+        int infoQuantity = 0;
+        int infoSaldo = 0;
+        int saldoInicial = 0;
+
+        TextView infoRecuperar = v.findViewById(R.id.txtRecuperar);
+        TextView infoGanar     = v.findViewById(R.id.txtGanar);
+        TextView infoTotal     = v.findViewById(R.id.txtTotal);
+
+        for(int i = 0; i < myAdapterPerson.getItemCount();i++){
+            int abonado = 0;
+            infoQuantity = personList.get(i).getQuantity();
+            saldoInicial = personList.get(i).getPagos() *  personList.get(i).getPlazos();
+            infoSaldo = personList.get(i).getSaldo();
+
+            abonado = saldoInicial - infoSaldo;
+
+            if(infoQuantity>abonado){
+                recuperar += (infoQuantity-abonado);
+                ganar += (saldoInicial-infoQuantity);
+            }else{
+                ganar += (saldoInicial-abonado);
+            }
+        }
+
+        infoRecuperar.setText(String.format(Locale.getDefault(),"$%d",recuperar));
+        infoGanar.setText(String.format(Locale.getDefault(),"$%d",ganar));
+        infoTotal.setText(String.format(Locale.getDefault(),"$%d",(ganar+recuperar)));
+
+        builder.setCancelable(true);
+        builder.create();
+        builder.show();
+
+        builder.setView(v);
+        builder.show();
+    }
+
 
     @Override
     protected void onResume() {
@@ -149,6 +209,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String text = textInputLayout.getEditText().getText().toString().trim();
         if (text.isEmpty()) {
             textInputLayout.setError("Campo requerido");
+            if (Build.VERSION.SDK_INT >= 26) {
+                ((Vibrator) getSystemService(VIBRATOR_SERVICE)).vibrate(VibrationEffect.createOneShot(150,10));
+            }else{
+                ((Vibrator) getSystemService(VIBRATOR_SERVICE)).vibrate(150);
+            }
             return false;
         } else {
             textInputLayout.setError(null);
@@ -172,7 +237,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 fecha.getText().toString(),
                 fecha.getText().toString(),
                 count,
-                NO_ADDED));
+                NO_ADDED,BIWEEKLY));
         count++;
 
         saveCounterId(prefCounter,count);

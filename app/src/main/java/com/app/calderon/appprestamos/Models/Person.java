@@ -11,7 +11,20 @@ public class Person {
     private String fechaFinal;
     private int positionID;
     private int added;
+    private int payment;
 
+    public Person(String name, int quantity, int plazos, int pagos, int saldo, String fechaInicial, String fechaFinal, int positionID, int added, int payment) {
+        this.name = name;
+        this.quantity = quantity;
+        this.plazos = plazos;
+        this.pagos = pagos;
+        this.saldo = saldo;
+        this.fechaInicial = fechaInicial;
+        this.fechaFinal = fechaFinal;
+        this.positionID = positionID;
+        this.added = added;
+        this.payment = payment;
+    }
 
     public Person(String name, int quantity, int plazos, int pagos, int saldo, String fechaInicial, String fechaFinal, int positionID, int added) {
         this.name = name;
@@ -95,6 +108,14 @@ public class Person {
 
     public void setAdded(int added) {
         this.added = added;
+    }
+
+    public int getPayment() {
+        return payment;
+    }
+
+    public void setPayment(int payment) {
+        this.payment = payment;
     }
 
     @Override

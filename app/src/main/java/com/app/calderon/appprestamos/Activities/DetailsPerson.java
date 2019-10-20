@@ -3,7 +3,10 @@ package com.app.calderon.appprestamos.Activities;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -30,8 +33,10 @@ import java.util.Locale;
 
 import static com.app.calderon.appprestamos.Util.Util.ABONO;
 import static com.app.calderon.appprestamos.Util.Util.ADDED;
+import static com.app.calderon.appprestamos.Util.Util.BIWEEKLY;
 import static com.app.calderon.appprestamos.Util.Util.RESTAR;
 import static com.app.calderon.appprestamos.Util.Util.SUMAR;
+import static com.app.calderon.appprestamos.Util.Util.WEEKLY;
 import static com.app.calderon.appprestamos.Util.Util.getCounterDetails;
 import static com.app.calderon.appprestamos.Util.Util.getDate;
 import static com.app.calderon.appprestamos.Util.Util.goMain;
@@ -62,6 +67,7 @@ public class DetailsPerson extends AppCompatActivity implements View.OnClickList
     private TextView tvSaldo;
     private TextView tvSaldoInicai;
     private TextView tvPagos;
+    private TextView changeMethod;
 
     private int abono = 0;
 
@@ -78,6 +84,7 @@ public class DetailsPerson extends AppCompatActivity implements View.OnClickList
     private int positionId;
     private int positionDelete;
     private int pays = 0;
+    private int change = 0;
     //private int counter = 0;
 
     private int positionList = 0;
@@ -107,6 +114,7 @@ public class DetailsPerson extends AppCompatActivity implements View.OnClickList
         sendRecyclerView();
         setDataFromPerson();
         slidr = Slidr.attach(this);
+        Toast.makeText(this, personList.get(positionList).getPayment()+"", Toast.LENGTH_SHORT).show();
     }
 
     private void getPreferences() {
@@ -168,6 +176,7 @@ public class DetailsPerson extends AppCompatActivity implements View.OnClickList
         etAbono = findViewById(R.id.abono);
         recyclerView = findViewById(R.id.rvDetails);
         tvPagos = findViewById(R.id.pagosDetails);
+        changeMethod = findViewById(R.id.changeMethod);
 
         nombre = personList.get(positionList).getName();
         fecha = personList.get(positionList).getFechaInicial();
@@ -178,6 +187,32 @@ public class DetailsPerson extends AppCompatActivity implements View.OnClickList
 
         fabAbono.setOnClickListener(this);
         fechaPick.setOnClickListener(this);
+        toolbar.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                for(Person p : personList){
+                    p.setPayment(BIWEEKLY);
+                }
+                return false;
+            }
+        });
+        changeMethod.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                changeMethod();
+                Toast.makeText(DetailsPerson.this, "Ha cambiado forma de pago", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        });
+    }
+
+    private void changeMethod() {
+        int i = personList.get(positionList).getPayment();
+        if(i == WEEKLY)
+            personList.get(positionList).setPayment(BIWEEKLY);
+        if(i == BIWEEKLY)
+            personList.get(positionList).setPayment(WEEKLY);
+        saveDataPerson(prefPerson,personList);
     }
 
     @Override
@@ -198,6 +233,11 @@ public class DetailsPerson extends AppCompatActivity implements View.OnClickList
 
         if (etAbono.getText().toString().isEmpty()) {
            etAbono.setError("Ingrese cantidad");
+            if (Build.VERSION.SDK_INT >= 26) {
+                ((Vibrator) getSystemService(VIBRATOR_SERVICE)).vibrate(VibrationEffect.createOneShot(150,10));
+            }else{
+                ((Vibrator) getSystemService(VIBRATOR_SERVICE)).vibrate(150);
+            }
         } else {
             abono = Integer.parseInt(etAbono.getText().toString());
             detailsList.add(new Details(fechaPick.getText().toString(),

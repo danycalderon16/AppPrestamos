@@ -36,6 +36,9 @@ public class Util {
     public final static int ADDED    = 499;
     public final static int SUMAR  = 7;
     public final static int RESTAR = 8;
+    public final static int WEEKLY = 89;
+    public final static int BIWEEKLY = 90;
+
 
     public static void goMain(Activity activity) {
         Intent intent = new Intent(activity, MainActivity.class);

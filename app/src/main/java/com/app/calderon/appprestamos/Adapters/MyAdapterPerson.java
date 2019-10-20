@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.ContextMenu;
@@ -12,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,7 +22,10 @@ import com.app.calderon.appprestamos.Models.Person;
 import com.app.calderon.appprestamos.R;
 
 import java.util.List;
+import java.util.Locale;
 
+import static com.app.calderon.appprestamos.Util.Util.BIWEEKLY;
+import static com.app.calderon.appprestamos.Util.Util.WEEKLY;
 import static com.app.calderon.appprestamos.Util.Util.saveDataPerson;
 
 public class MyAdapterPerson extends RecyclerView.Adapter<MyAdapterPerson.ViewHolder>{
@@ -61,6 +67,8 @@ public class MyAdapterPerson extends RecyclerView.Adapter<MyAdapterPerson.ViewHo
         public TextView quantity;
         public TextView saldo;
         public TextView date;
+        public TextView items;
+        public ImageView circle;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -68,14 +76,19 @@ public class MyAdapterPerson extends RecyclerView.Adapter<MyAdapterPerson.ViewHo
             quantity = itemView.findViewById(R.id.quantity);
             saldo = itemView.findViewById(R.id.saldo);
             date = itemView.findViewById(R.id.date);
+            items = itemView.findViewById(R.id.itemCounter);
+            circle = itemView.findViewById(R.id.payMethod);
             itemView.setOnCreateContextMenuListener(this);
         }
 
         public void bind(final Person person) {
             name.setText(person.getName());
-            quantity.setText("$"+person.getQuantity());
-            saldo.setText("$"+person.getSaldo());
+            quantity.setText(String.format(Locale.getDefault(), "$%d",person.getQuantity()));
+            saldo.setText(String.format(Locale.getDefault(),"$%d",person.getSaldo()));
             date.setText(person.getFechaInicial());
+            if(people!=null){
+                items.setText(String.format(Locale.getDefault(),"%d/%d",getAdapterPosition()+1,people.size()));
+            }
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -83,6 +96,12 @@ public class MyAdapterPerson extends RecyclerView.Adapter<MyAdapterPerson.ViewHo
                     listener.onItemClick(person,getAdapterPosition());
                 }
             });
+            if(person.getPayment() == WEEKLY){
+                circle.setBackground(context.getDrawable(R.drawable.circle_shape_weekly));
+            }
+            if(person.getPayment() == BIWEEKLY){
+                circle.setBackground(context.getDrawable(R.drawable.circle_shape_biweekly));
+            }
         }
 
         @Override
